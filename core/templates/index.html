@@ -1,0 +1,173 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <title>Crypto Desk</title>
+
+    <!--- ====BOX ICONS==== -->
+    <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+
+    <link rel='stylesheet' type='text/css' href="{% static 'css/main.css' %}">
+    
+</head>
+
+<body>
+    <!-- ==== HEADER ==== -->
+	<header class="l-header">
+		<nav class="nav bd-grid">
+			<div>
+				<span class="nav__logo" onclick="home()">Crypto Desk</span>
+			</div>
+
+			<div class="nav__menu" id="nav-menu">
+				<ul class="nav__list">
+					<li class="nav__item"><span class="nav__link active" onclick="home()" >Home</span></li>
+					<li class="nav__item"><span class="nav__link" onclick="cryptocurrency()">Cryptocurrencies</span></li>
+					<li class="nav__item"><span class="nav__link" onclick="about()">About</span></li>
+					<li class="nav__item"><span class="nav__link" onclick="contact()">Contact</span></li>
+				</ul>
+			</div>
+
+			<div class="nav__toggle" id="nav-toggle">
+				<i class='bx bx-menu'></i>
+			</div>
+		</nav>
+	</header>
+
+    <!--- ==== MAIN ==== -->
+    <main class="1-main">
+
+		<!--- ==== HOME ==== -->
+		<section class="home bd-grid" id="home">
+			<div class="home__data">
+				<h1 class="home__title">Crypto-Desk, <br>your new way to <span class="home__title-color">Buy</span><br> Cryptocurrencies</h1>
+				<span class="button" onclick="cryptocurrency()">Cryptocurrencies</span>
+			</div>
+
+			<div class="home__social">
+				<a href="#" class="home__social-icon"><i class='bx bxl-linkedin'></i></a>
+				<a href="#" class="home__social-icon"><i class='bx bxl-twitter'></i></a>
+				<a href="#" class="home__social-icon"><i class='bx bxl-github' ></i></a>
+			</div>
+		</section>
+        
+        <!-- ==== CRYPTOCURRENCIES ====-->
+        <section class="work section" id="cryptocurrency">
+			<h2 class="section-title">Cryptocurrencies</h2>
+			
+			<div class="work__container bd-grid">
+				{% for c in coin %}
+					<div class="work__img">
+						<a href="{% url 'feed_page' c.id %}" class="work__link">
+							<center>
+								<img src="{{c.image}}" alt="">
+							</center>
+							<P class="work__text">
+								{{c.name}}
+							</P>
+							<p class="work__text">
+								({{c.symbol}})
+							</p>
+							<!--<p class="work__price">
+								{{c.current_price}} USD-->
+							</p>
+							<p hidden>
+								{{c.id}}
+							</p>
+						</a>	
+					</div>
+				{% endfor %}
+			</div>
+		</section>
+    
+		<!--- ==== ABOUT ==== -->
+		<section class="about section" id="about">
+			<h2 class="section-title">About</h2>
+
+			<div class="about__container bd-grid">
+				<div>
+					<h2 class="about__subtitle">History:</h2>
+					<p class="about__text">Crypto-Desk was found on 2021 with idea of easing the viewpoint of an individual. The system allows any individual to view different market caps of different exchanges simultaneously. We provide live data for 250 Cryptocurrencies.</p>
+				</div>
+			</div>
+		</section>	 
+	</main>
+
+	<!--- ==== CONTACT ==== -->
+	<section class="contact section" id="contact">
+		<h2 class="section-title">Contact</h2>
+
+		<div class="contact__containter bd-grid">
+			<form action="" class="contact__form">
+				<input type="text" placeholder="Name" class="contact__input">
+				<input type="email" placeholder="Email" class="contact__input">
+				<textarea name="" id="" cols="0" rows="10" class="contact__input"></textarea>
+
+				<input type="button" value="Send" class="contact__button button">
+			</form>
+		</div>
+	</section>
+
+	<!--- ==== FOOTER ==== -->
+	<footer class="footer">
+		<p class="footer__title">Crypto-Desk</p>
+
+		<div class="footer__social">
+			<a href="#" class="footer__icon"><i class='bx bxl-facebook' ></i></a>
+			<a href="#" class="footer__icon"><i class='bx bxl-instagram' ></i></a>
+			<a href="#" class="footer__icon"><i class='bx bxl-twitter' ></i></a>
+		</div>
+		<p>&#169; 2020 copyright all rights reserved</p>
+	</footer>
+
+    <!--- ==== MAIN JS ==== -->
+	<script>
+		/**==== Scroll ====**/
+		function home(){
+			document.getElementById('home').scrollIntoView({behavior:"smooth"});
+		}
+		function cryptocurrency(){
+			document.getElementById('cryptocurrency').scrollIntoView({behavior:"smooth"});
+		}
+		function about(){
+			document.getElementById('about').scrollIntoView({behavior:"smooth"});
+		}
+		function contact(){
+			document.getElementById('contact').scrollIntoView({behavior:"smooth"});
+		}
+
+		//document.getElementById('top').scrollIntoView(true);
+
+        /**==== MENU SHOW ====**/
+        const showMenu = (toggleId, navID) =>{
+            const toggle = document.getElementById(toggleId),
+            nav = document.getElementById(navID)
+
+            if(toggle && nav){
+                toggle.addEventListener('click',()=>{
+                    nav.classList.toggle('show')
+                })
+            }
+        }
+        showMenu('nav-toggle','nav-menu')
+
+        /**==== Active and Remove Menu ====**/
+        const navLink = document.querySelectorAll('.nav__link')
+
+        function linkAction(){
+            // Active link
+            navLink.forEach(n => n.classList.remove('active'))
+            this.classList.add('active')
+            
+            // Remove Menu mobile
+            const navMenu = document.getElementById('nav-menu')
+            navMenu.classList.remove('show')
+        }
+
+        navLink.forEach(n => n.addEventListener('click', linkAction))
+    </script>
+</body>
+</html>

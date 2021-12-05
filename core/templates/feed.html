@@ -1,0 +1,280 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Feed</title>
+
+    <!--- ====BOX ICONS==== -->
+    <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+    <!--- ====BOX ICONS END ==== -->
+
+    <link rel='stylesheet' type='text/css' href="{% static 'css/main.css' %}">
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    
+    <!-- JQPLOT -->
+    <link rel="stylesheet" type="text/css" href="{% static '/jquery.jqplot.1.0.9.d96a669/jquery.jqplot.css' %}" />
+    <!-- JQPLOT END -->
+    
+    <!-- MOMENT -->
+    <link rel="stylesheet" type="text/javascript" href="{% static '/js/moment.js' %}" />
+    <!-- MOMENT END -->
+</head>
+
+<body>
+    <!-- ==== HEADER ==== -->
+	<header class="l-header">
+		<nav class="nav bd-grid">
+			<div>
+				<a href="../home/" class="nav__logo">Crypto Desk</a>
+			</div>
+
+			<div class="nav__menu" id="nav-menu">
+				<ul class="nav__list">
+					<li class="nav__item"><a href="../home/" class="nav__link active">Home</a></li>
+					<li class="nav__item"><a href="../home/#cryptocurrency" class="nav__link">Cryptocurrencies</a></li>
+					<li class="nav__item"><a href="../home/#about" class="nav__link">About</a></li>
+					<li class="nav__item"><a href="../home/#contact" class="nav__link">Contact</a></li>
+				</ul>
+			</div>
+
+			<div class="nav__toggle" id="nav-toggle">
+				<i class='bx bx-menu'></i>
+			</div>
+		</nav>
+	</header>
+
+    <main class="1-main">
+        <!--- ==== SKILLS ==== -->
+        
+		<section class="skills section" id="skills">
+			<h2 class="section-title" id="Coin">Loading</h2>          
+
+            <center><div class="ohlc__data" id="ohlc__chart" style="height:350px; width:1300px;"></div></center><br><br>
+
+			<div class="skills__container bd-grid" id='mydata'>
+				<div>
+					<!-- <div class="skills__data"> -->
+						<!-- <div class="skills__name"> -->
+							<!-- <i class='bx bxl-html5 skills__icon' ></i> -->
+
+                            <div id="Exchanges"></div> 
+							<!-- <span class="skills__name" id="exchange"></span> -->
+						<!-- </div> -->
+						<div>
+                            <div id="Prices"></div>
+							<!-- <span class="skills__percentage" id="price"></span> -->
+						</div>
+		    	</div>
+            </div>
+		</section>
+    </main>
+
+    <!--- ==== MAIN JS ==== -->
+	<script>
+        /**==== OHLC CHART ====**/
+        try{
+            var ohlc = JSON.parse("{{ohlc|escapejs}}"); 
+        }
+        catch(err){
+            console.log(err.message);
+        }
+        
+        $(document).ready(function(){     
+            var plot1 = $.jqplot('ohlc__chart',[ohlc],{
+              seriesDefaults:{yaxis:'y2axis'},
+              axes: {
+                xaxis: {
+                  renderer:$.jqplot.DateAxisRenderer,
+                  tickOptions:{formatString:'%b %e'}, 
+                },
+                y2axis: {
+                  tickOptions:{formatString:'$%d'}
+                }
+              },
+              series: [{renderer:$.jqplot.OHLCRenderer}],
+              highlighter: {
+                show: true,
+                showMarker:false,
+                tooltipAxes: 'xy',
+                yvalues: 4,
+                formatString:'<table class="jqplot-highlighter"> \
+                <tr><td>date:</td><td>%s</td></tr> \
+                <tr><td>open:</td><td>%s</td></tr> \
+                <tr><td>hi:</td><td>%s</td></tr> \
+                <tr><td>low:</td><td>%s</td></tr> \
+                <tr><td>close:</td><td>%s</td></tr></table>'
+              }
+            });   
+          });
+        /**==== OHLC CHART END ====**/
+
+
+        /**==== Scroll ====**/
+        function home(){
+            
+			document.getElementById('home').scrollIntoView({behavior:"smooth"});
+		}
+		function cryptocurrency(){
+			document.getElementById('cryptocurrency').scrollIntoView({behavior:"smooth"});
+		}
+		function about(){
+			document.getElementById('about').scrollIntoView({behavior:"smooth"});
+		}
+		function contact(){
+			document.getElementById('contact').scrollIntoView({behavior:"smooth"});
+		}
+        /**==== Scroll END ====**/
+
+
+        /**==== RENDER PRICE ====**/
+        
+
+
+        var Exchanges = JSON.parse("{{exg|escapejs}}");
+        
+        var len = Exchanges.length;
+        
+        console.log(Exchanges);
+        
+        /**let getData = () => {
+            const oXHR = new XMLHttpRequest();
+            oXHR.onreadystatechange = reportStatus;
+            oXHR.open("GET", Exchanges, true);
+            oXHR.setRequestHeader("Content-Type", "application/json");
+            oXHR.send(); 
+    
+            function reportStatus() {
+                // Check if request is complete.
+                if (oXHR.readyState === XMLHttpRequest.DONE && 
+                    oXHR.status === 200) 
+                { **/
+                    
+                    for(const i in Exchanges){
+                        fetch(Exchanges[i])
+                        .then(res => res.json())
+                        .then((out) => {
+                            document.getElementById('Coin').innerHTML = out.tickers[0].coin_id + ' (' + out.tickers[0].base + ')';
+            
+                            for(const j = 0; j < Exchanges.length; j++){
+                                try{
+                                    var skills__data = document.createElement('div');
+                                    skills__data.setAttribute('class','skills__data');
+                                    skills__data.setAttribute('id','table__data');
+            
+                                    if(out.tickers[0].target == "USDT" || out.tickers[0].target == "INR" || out.tickers[0].target == "USD"){
+                                        var div = document.createElement('div');
+                                        div = document.createElement('a');
+                                        div.setAttribute('id','exchange__logo');
+                                        document.getElementById('Exchanges').appendChild(skills__data);
+                                        div.innerHTML = "<img src=\""+out.tickers[0].market.logo+"\">" ;
+                                        div.setAttribute("href",out.tickers[0].trade_url);
+                                        div.setAttribute("target", "_blank");
+                                        
+                                        skills__data.appendChild(div);
+                                        
+                                        var div2 = document.createElement('div');
+                                        div2.innerHTML = out.name;
+                                        div2.setAttribute('id','exchange__name')
+                                        skills__data.appendChild(div2); 
+            
+                                        /**var div3 = document.createElement('div');
+                                        div3.innerHTML = out.tickers[0].volume;
+                                        div3.setAttribute('id','exchange__name')
+                                        skills__data.appendChild(div3); **/
+            
+                                        var div4 = document.createElement('div');
+                                        div4.setAttribute('id','exchange__price');
+                                        
+                                        div4.style.justifyContent = 'flex-end';
+                                        div4.innerHTML = out.tickers[0].converted_last.usd + ' ' + 'USD'/*out.tickers[0].target*/;
+                                        skills__data.appendChild(div4); 
+
+                                
+                                    }
+                                }
+                                catch(err){
+                                    console.error(err);
+                                }   
+                            }
+                    }).catch(err => console.error(err));
+                    }
+                    
+    /**                i = i + 1;
+                    if (i == 6) 
+                        i = 0;
+                }
+            }
+        }
+        
+        
+        var counter = 10;
+        window.setInterval(function () {
+            counter--;
+            if (counter >= 0) {
+                var span;
+                span = document.getElementById("cnt");
+                span.innerHTML = counter;
+            }
+            if (counter === 0) {
+                counter = 10;
+            }
+
+        }, 1000);
+        
+        let reload = window.setInterval('getData()', 10000);**/
+ 
+        /**==== RENDER PRICE END ====**/
+
+        
+		//document.getElementById('top').scrollIntoView(true);
+
+        /**==== MENU SHOW MOBILE VIEW ====**/
+        const showMenu = (toggleId, navID) =>{
+            const toggle = document.getElementById(toggleId),
+            nav = document.getElementById(navID)
+
+            if(toggle && nav){
+                toggle.addEventListener('click',()=>{
+                    nav.classList.toggle('show')
+                })
+            }
+        }
+        showMenu('nav-toggle','nav-menu')
+        /**==== MENU SHOW END ====**/
+
+
+        /**==== Active and Remove Menu ====**/
+        const navLink = document.querySelectorAll('.nav__link')
+        function linkAction(){
+            // Active link
+            navLink.forEach(n => n.classList.remove('active'))
+            this.classList.add('active')
+            
+            // Remove Menu mobile
+            const navMenu = document.getElementById('nav-menu')
+            navMenu.classList.remove('show')
+        }
+        navLink.forEach(n => n.addEventListener('click', linkAction))
+        /*const object = { a: 1, b: 2, c: 3 };
+
+        for (const property in object) {
+          console.log(`${property}: ${object[property]}`);
+        }*/
+    </script>
+
+    <!-- JQPLOT LIB start -->
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript" src="{% static '/jquery.jqplot.1.0.9.d96a669/jquery.jqplot.js' %}"></script>
+    <script type="text/javascript" src="{% static '/jquery.jqplot.1.0.9.d96a669/plugins/jqplot.dateAxisRenderer.js' %}"></script>
+    <script type="text/javascript" src="{% static '/jquery.jqplot.1.0.9.d96a669/plugins/jqplot.categoryAxisRenderer.js' %}"></script>
+    <script type="text/javascript" src="{% static '/jquery.jqplot.1.0.9.d96a669/plugins/jqplot.ohlcRenderer.js' %}"></script>
+    <script type="text/javascript" src="{% static '/jquery.jqplot.1.0.9.d96a669/plugins/jqplot.highlighter.js' %}"></script>
+    <script type="text/javascript" src="{% static '/jquery.jqplot.1.0.9.d96a669/plugins/jqplot.cursor.js' %}"></script>
+    
+    <!-- JQPLOT LIB end -->
+</body>
+</html>
